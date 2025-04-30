@@ -1,14 +1,15 @@
 import {
   isRouteErrorResponse,
-  Links,
   Meta,
   Outlet,
   Scripts,
   ScrollRestoration,
 } from "react-router";
-
+import { GoogleOAuthProvider } from "@react-oauth/google";
+import "@ant-design/v5-patch-for-react-19";
 import type { Route } from "./+types/root";
 import "./app.css";
+import { ConfigProvider, theme } from "antd";
 
 export const links: Route.LinksFunction = () => [
   { rel: "preconnect", href: "https://fonts.googleapis.com" },
@@ -30,7 +31,6 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <Meta />
-        <Links />
       </head>
       <body>
         {children}
@@ -41,8 +41,30 @@ export function Layout({ children }: { children: React.ReactNode }) {
   );
 }
 
+const darkTheme = {
+  algorithm: theme.darkAlgorithm,
+  token: {
+    colorPrimary: "#008e9b",
+    colorBgBase: "#121212",
+    colorBgContainer: "#1E1E1E",
+    colorTextBase: "#ffffff",
+    colorTextSecondary: "#b3b3b3",
+    colorBorder: "#2C2C2C",
+    colorError: "#CF6679",
+  },
+};
+
 export default function App() {
-  return <Outlet />;
+  const clientId =
+    "1075704836359-8tm0nadclsf68ol1bs27dqnt11b4tar5.apps.googleusercontent.com";
+
+  return (
+    <ConfigProvider theme={darkTheme}>
+      <GoogleOAuthProvider clientId={clientId}>
+        <Outlet />
+      </GoogleOAuthProvider>
+    </ConfigProvider>
+  );
 }
 
 export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
